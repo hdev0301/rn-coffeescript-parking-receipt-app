@@ -1,0 +1,11 @@
+module.exports =
+  Main: require './main'
+  Place: require './place'
+  Promo: require './promo'
+  SignUp: require './sign-up'
+  Profile: require './profile'
+  Bonuses: require './bonuses'
+  Parking: require './parking'
+  ScanReceipt: require './scan-receipt'
+  Raffle: require './raffle'
+  About: require './about'

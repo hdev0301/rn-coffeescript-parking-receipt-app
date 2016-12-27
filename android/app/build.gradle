@@ -1,0 +1,96 @@
+apply plugin: "com.android.application"
+
+import com.android.build.OutputFile
+
+apply from: "../../node_modules/react-native/react.gradle"
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "23.0.1"
+
+    defaultConfig {
+        applicationId "com.bawadi"
+        minSdkVersion 16
+        targetSdkVersion 24
+        versionCode 16
+        versionName "1.0.11"
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
+    }
+    signingConfigs {
+        release {
+            storeFile project.hasProperty("BAWADI_STORE") ? file(BAWADI_STORE) : null
+            storePassword project.hasProperty("BAWADI_STORE_PASSWORD") ? BAWADI_STORE_PASSWORD : null
+            keyAlias project.hasProperty("BAWADI_STORE_ALIAS") ? BAWADI_STORE_ALIAS : null
+            keyPassword project.hasProperty("BAWADI_KEY_PASSWORD") ? BAWADI_KEY_PASSWORD : null
+        }
+        adhoc {
+            storeFile project.hasProperty("BAWADI_STORE") ? file(BAWADI_STORE) : null
+            storePassword project.hasProperty("BAWADI_STORE_PASSWORD") ? BAWADI_STORE_PASSWORD : null
+            keyAlias project.hasProperty("BAWADI_STORE_ALIAS") ? BAWADI_STORE_ALIAS : null
+            keyPassword project.hasProperty("BAWADI_KEY_PASSWORD") ? BAWADI_KEY_PASSWORD : null
+        }
+    }
+    splits {
+        abi {
+            reset()
+            enable false
+            universalApk false
+            include "armeabi-v7a", "x86"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+        adhocRelease {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.adhoc
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def versionCodes = ["armeabi-v7a":1, "x86":2]
+            def abi = output.getFilter(OutputFile.ABI)
+            if (abi != null) {
+                output.versionCodeOverride =
+                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
+            }
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+    dependencies {
+        // The Fabric Gradle plugin uses an open ended version to react
+        // quickly to Android tooling updates
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
+apply plugin: 'io.fabric'
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+dependencies {
+    compile project(':react-native-share')
+    compile project(':react-native-fabric')
+    compile project(':react-native-fs')
+    compile project(':react-native-camera')
+    compile project(':react-native-device-info')
+    compile project(':react-native-vector-icons')
+    compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.android.support:appcompat-v7:23.0.1"
+    compile "com.facebook.react:react-native:+"  // From node_modules
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true;
+    }
+}
